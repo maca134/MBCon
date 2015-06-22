@@ -1,4 +1,4 @@
-# MBCon #
+# MBCon - [Download](https://github.com/maca134/MBCon/releases) #
 
 MBCon is a C# (.NET) [BattlEye](http://www.battleye.com/) RCON client for ARMA 2/3 servers. It uses a simple plugin system to make it easy to extend. (BattleNET is included at the moment as there is a missing BE command, this will be changed to nuget soon).
 
