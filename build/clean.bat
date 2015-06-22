@@ -1,2 +1,2 @@
-nant-0.92\nant.exe clean
+nant.exe clean
 pause

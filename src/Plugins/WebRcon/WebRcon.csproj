@@ -118,14 +118,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>set OUTPUTPATH=$(SolutionDir)Release\plugins\$(TargetName)\
-IF EXIST "%25OUTPUTPATH%25" (RD /S /Q "%25OUTPUTPATH%25")
-mkdir "%25OUTPUTPATH%25"
-xcopy /E /Y "$(TargetDir)*.*" "%25OUTPUTPATH%25"
-
-del /Q "%25OUTPUTPATH%25\*.pdb"
-del /Q "%25OUTPUTPATH%25\*.config"
-del /Q "%25OUTPUTPATH%25\*.xml"
-del /Q "%25OUTPUTPATH%25\Proxy.dll"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -4,3 +4,11 @@ build/release/*
 build/app/*
 src/packages/*
 src/Plugins/CCG/*
+src/BattleNET/bin/*
+src/BattleNET/obj/*
+src/MBCon/bin/*
+src/MBCon/obj/*
+src/Plugins/*/bin/*
+src/Plugins/*/obj/*
+src/Proxy/bin/*
+src/Proxy/obj/*
