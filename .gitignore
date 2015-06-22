@@ -1,0 +1,6 @@
+.hg*
+build/nant-0.92/*
+build/release/*
+build/app/*
+src/packages/*
+src/Plugins/CCG/*

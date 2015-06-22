@@ -1,0 +1,103 @@
+<project name="MBCon Build" default="release" basedir=".">
+    <property name="configuration" value="Release" />
+	<property name="dir.source" value="${project::get-base-directory()}\..\src" />
+	<property name="dir.app" value="${project::get-base-directory()}\app" />
+	<property name="dir.release" value="${project::get-base-directory()}\release" />
+	<property name="dir.pluginsource" value="${project::get-base-directory()}\..\src\Plugins" />
+	<property name="dir.plugins" value="${project::get-base-directory()}\app\plugins" />
+	
+	<property name="versionString" value="0-0-0-0"/>
+
+	<target name="release" depends="set.version, clean, build, collect, plugintemplate, zip" />
+	
+	<target name="setVersionString">
+		<loadfile file="versioninfo.txt" property="versionString" />
+		<echo message= "Old Version: ${versionString}" />
+		<property name="major" value="${version::get-major(version::parse(versionString))}" />
+		<property name="minor" value="${version::get-minor(version::parse(versionString))}" />
+		<property name="build" value="${version::get-build(version::parse(versionString))}" />
+		<property name="revision" value="${version::get-revision(version::parse(versionString))}" />
+		<property name="versionString" value="${major}.${minor}.${build}.${revision}"/>
+	</target>
+	
+	<target name="set.version" depends="setVersionString" description="generates the version number">
+		<echo message="Setting the build version to ${versionString}..." />
+		<attrib file="${dir.source}\MBCon\Properties\AssemblyInfo.cs" readonly="false" />
+		<asminfo output="${dir.source}\MBCon\Properties\AssemblyInfo.cs" language="CSharp">
+			<imports>
+				<import namespace="System" />
+				<import namespace="System.Reflection" />
+			</imports>
+			<attributes>
+				<attribute type="AssemblyTitleAttribute" value="MBCon" />
+				<attribute type="AssemblyCompanyAttribute" value="Maca134" />
+				<attribute type="AssemblyProductAttribute" value="MBCon" />
+				<attribute type="AssemblyCopyrightAttribute" value="Copyright 2015" />
+				<attribute type="AssemblyVersionAttribute" value="${versionString}" />
+				<attribute type="AssemblyFileVersionAttribute" value="${versionString}" />
+			</attributes>
+		</asminfo>
+		<attrib file="${dir.source}\MBCon\Properties\AssemblyInfo.cs" readonly="true" />
+	</target>
+	
+    <target name="clean" description="Delete all previously compiled binaries.">
+        <delete>
+            <fileset basedir="${dir.source}">
+                <include name="**/bin/**" />
+                <include name="**/obj/**" />
+                <include name="**/*.suo" />
+                <include name="**/*.user" />
+            </fileset>
+        </delete>
+		<delete dir="${dir.app}" failonerror="false" />
+		<mkdir dir="${dir.app}" />
+		<mkdir dir="${dir.release}" />
+    </target>
+
+    <target name="build" description="">
+    	<msbuild project="${dir.source}\MBCon.sln">
+			<property name="Configuration" value="${configuration}"/>
+		</msbuild>
+    </target>
+
+    <target name="collect" description="">
+    	<copy todir="${dir.app}">
+			<fileset basedir="${dir.source}/MBCon/bin/${configuration}">
+				<include name="**/*" />
+				<exclude name="**/*.pdb" />
+				<exclude name="**/*.xml" />
+            </fileset>
+		</copy>
+		<mkdir dir="${dir.plugins}" />
+
+		<foreach item="Folder" in="${dir.pluginsource}" property="foldername">
+			<mkdir dir="${dir.plugins}\${path::get-file-name(foldername)}" />
+			<copy todir="${dir.plugins}\${path::get-file-name(foldername)}" includeemptydirs="false">
+				<fileset basedir="${foldername}/bin/${configuration}">
+					<include name="**/*" />
+					<exclude name="**/*.pdb" />
+					<exclude name="**/*.xml" />
+				</fileset>
+			</copy>
+		</foreach>
+    </target>
+
+    <target name="plugintemplate" description="">
+    	<zip zipfile="${dir.app}\pluginTemplate.zip">
+			<fileset basedir="${dir.source}\MBConTestPluginVSTemplate" >
+				<include name="**/*" />
+			</fileset>
+		</zip>
+    </target>
+
+    <target name="zip" description="">
+    	<delete dir="${dir.plugins}\CCG" failonerror="false" />
+    	<delete dir="${dir.plugins}\TestPlugin" failonerror="false" />
+    	<zip zipfile="${dir.release}/mbcon-${versionString}.zip">
+			<fileset basedir="${dir.app}" >
+				<include name="**/*" />
+			</fileset>
+		</zip>
+    </target>
+
+</project>
