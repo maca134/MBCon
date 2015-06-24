@@ -127,7 +127,7 @@ namespace WebRcon
                 Send(res.ToString());
                 return;
             }
-            //_api.SendCommand(command);
+            _api.SendCommand(command);
 
             switch (command.Type)
             {
