@@ -342,8 +342,9 @@ namespace ScheduledTasks
             {
                 var now = DateTime.Now;
 
-                if (now > _nextRun)
-                    _nextRun.Add(_interval);
+                if (now > _nextRun) {
+                    _nextRun = now.Add(_interval);
+                }
                 return _nextRun.Subtract(DateTime.Now);
             }
         }
