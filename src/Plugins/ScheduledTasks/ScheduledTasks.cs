@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using Humanizer;
@@ -115,7 +116,18 @@ namespace ScheduledTasks
                 {
                     t = Task.Next;
                 }
-                _waitHandle.WaitOne(t.TimeSpan);
+
+                if (t == null)
+                    continue;
+
+                try {
+                    _waitHandle.WaitOne(t.TimeSpan);
+                } catch(ArgumentOutOfRangeException ex) {
+                    throw new ScheduledTasksException(String.Format("t.TimeSpan is falling behind. (Start field is to soon?){0}", ex));
+                } catch(Exception ex) {
+                    throw new ScheduledTasksException(String.Format("{0}", ex));
+                }
+
                 if (_workerTerminateSignal)
                     break;
                 if (_debug)
@@ -124,7 +136,26 @@ namespace ScheduledTasks
                 }
                 else
                 {
-                    _api.SendCommand(t.Command);
+                    if (t.Execute != null) {
+                        if (File.Exists(t.Execute.Trim().Replace("/", @"\"))) {
+                            AppConsole.Log(String.Format("Running Executefile: {0}", ConsoleColor.DarkMagenta));
+
+                            ProcessStartInfo processInfo = new ProcessStartInfo();
+                            processInfo.FileName = t.Execute.Trim().Replace("/", @"\");
+                            processInfo.Arguments = "";
+                            processInfo.CreateNoWindow = false;
+                            processInfo.UseShellExecute = true;
+                            processInfo.RedirectStandardError = false;
+                            processInfo.RedirectStandardOutput = false;
+
+                            Process process = Process.Start(processInfo);
+                        } else {
+                            AppConsole.Log(String.Format("Executefile doesn't exist: {0}", t.Execute.Trim().Replace("/", @"\")), ConsoleColor.DarkMagenta);
+                        }
+                    }
+
+                    if (t.Command != null)
+                        _api.SendCommand(t.Command);
                 }
                 lock (Task.Tasks)
                 {

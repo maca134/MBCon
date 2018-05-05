@@ -148,6 +148,7 @@ namespace ScheduledTasks
             {
                 i++;
                 string start;
+                string execute;
                 Command cmd;
                 DateTime nextRun;
                 int interval;
@@ -164,13 +165,25 @@ namespace ScheduledTasks
                     throw new ScheduledTasksException(String.Format("Could not parse command: {0}", ex.Message));
                 }
 
+                try {
+                    if (item.execute != null) {
+                        execute = item.execute.ToString();
+                    } else { execute = null; }
+                } catch (CommandException ex) {
+                    AppConsole.Log(String.Format("Could not parse execute: {0}", ex.Message), ConsoleColor.Red);
+                    execute = "";
+                }
+
                 try
                 {
-                    cmd = new Command(item.cmd.ToString());
+                    if (item.cmd != null) {
+                        cmd = new Command(item.cmd.ToString());
+                    } else { cmd = null; }
                 }
                 catch (CommandException ex)
                 {
-                    throw new ScheduledTasksException(String.Format("Could not parse command: {0}", ex.Message));
+                    AppConsole.Log(String.Format("Could not parse command: {0}", ex.Message), ConsoleColor.Red);
+                    cmd = null;
                 }
 
                 try
@@ -225,6 +238,7 @@ namespace ScheduledTasks
 
                 var task = new Task()
                 {
+                    _execute = execute,
                     _command = cmd,
                     _nextRun = nextRun,
                     _interval = TimeSpan.FromSeconds(interval),
@@ -342,8 +356,9 @@ namespace ScheduledTasks
             {
                 var now = DateTime.Now;
 
-                if (now > _nextRun)
-                    _nextRun.Add(_interval);
+                if (now > _nextRun) {
+                    _nextRun = now.Add(_interval);
+                }
                 return _nextRun.Subtract(DateTime.Now);
             }
         }
@@ -367,11 +382,19 @@ namespace ScheduledTasks
         }
 
         private Command _command;
+        private string _execute;
+
         public Command Command
         {
             get
             {
                 return _command;
+            }
+        }
+
+        public string Execute {
+            get {
+                return _execute;
             }
         }
 

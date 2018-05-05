@@ -12,3 +12,5 @@ src/Plugins/*/bin/*
 src/Plugins/*/obj/*
 src/Proxy/bin/*
 src/Proxy/obj/*
+src/.vs/*
+src/devenv.sln
