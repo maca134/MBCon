@@ -3,33 +3,26 @@
 
     start: Either be a time (hh:mm:ss) or a number
         - When formatted as a time, the task will run once a day at that time
-        - When formatted as a number, the task will run x seconds after MBCon starts
+        - When formatted as a number, the task will run x seconds after MBCon starts (Will get error if start is to soon. Use numbers >= 10)
 
-    cmd: A valid BattlEye command to run on the server.
+    cmd: A valid BattlEye command to run on the server. (Optional)
+														(You want at one of them tho...)
+	execute: Full path to .bat or other executable file. (Optional)
 
     interval: Numbers of seconds to wait before running the task again (does not apply on time-based tasks)
 
     loop: Number of times the task will run. Set to -1 to loop forever. (Default: -1)
 */
 [
-    {
-        "start": "10",
-        "interval": "10",
-        "loop": 3,
-        "cmd": "say -1 10 10 3."
-    },
-    {
-        "start": "5",
-        "interval": "10",
-        "cmd": "say -1 5 10."
-    },
-    {
-        "start": "40",
-        "loop": 1,
-        "cmd": "say -1 40 1."
-    },
-    {
-        "start": "23:45:00",
-        "cmd": "say -1 Message will run at 23:45"
-    }
+	{
+		"start": "01:00:00",
+		"execute": "C:/full/path/to/file/test.bat",
+		"cmd": "say -1 Open bat file every day at 1am."
+	},
+	{
+		"start": "10",
+		"loop": 1,
+		"execute": "C:/full/path/to/file/test.bat",
+		"cmd": "say -1 Opend test.bat"
+	}
 ]
