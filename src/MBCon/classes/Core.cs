@@ -107,20 +107,24 @@ namespace MBCon.classes
 
         public void Connect()
         {
-            for (var tries = 1; tries <= _maxtries; tries++)
+            for (var ia = 1; ia <= 3; ia++)
             {
-                try
+                for (var tries = 1; tries <= _maxtries; tries++)
                 {
-                    _beclient.Connect();
-                    if (!_beclient.Connected)
-                        throw new CoreException();
-                    break;
+                    try
+                    {
+                        _beclient.Connect();
+                        if (!_beclient.Connected)
+                            throw new CoreException();
+                        break;
+                    }
+                    catch
+                    {
+                        AppConsole.Log(String.Format("Failed to connect to server. Attempt {0}/{1}", tries, _maxtries), ConsoleColor.Red);
+                    }
+                    Thread.Sleep(1000);
                 }
-                catch
-                {
-                    AppConsole.Log(String.Format("Failed to connect to server. Attempt {0}/{1}", tries, _maxtries), ConsoleColor.Red);
-                }
-				Thread.Sleep(1000);
+                Thread.Sleep(60000);
             }
 
             if (!_beclient.Connected)
